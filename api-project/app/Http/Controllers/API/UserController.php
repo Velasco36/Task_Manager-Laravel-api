@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Validator;
@@ -13,7 +14,10 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     //
-
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -41,39 +45,41 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string|min:6'
-        ]);
+        // Validar las credenciales del usuario
+        $credentials = $request->only('email', 'password');
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors());
+        // Intentar autenticar al usuario
+        if (!auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Credenciales inválidas'], 401);
         }
-        if (!$token = auth()->guard('api')->attempt($validator->validated())) {
-            return response()->json(['success' => false, 'msg' => 'Username & Password is incorrect']);
-        }
-        return  $this->respondWithToken($token);
-    }
 
-    protected function respondWithToken($token)
-    {
+        // Generar token JWT
+        $token = JWTAuth::attempt($credentials);
+
+        // Devolver el token JWT en la respuesta
         return response()->json([
             'success' => true,
             'access_token' => $token,
             'token_type' => 'Bearer',
-            // 'expired_in' => config('auth.guards.api.ttl') * 60
-
-
         ]);
+    }
+
+    //profile method
+    public function userProfile()
+    {
+        $user = Auth::user();
+        return response()->json(['message' => $user]);
     }
     //logout api method
     public function logout()
     {
         try {
             auth()->logout();
-            return response()->json(['success' => true, 'msg' => ' User logged out!']);
+
+            return response()->json(['message' => 'Successfully logged out']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
+            return response()->json(['message' => $e]);
         }
     }
+
 }
