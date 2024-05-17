@@ -15,6 +15,9 @@ use App\Http\Controllers\API\UserController;
 |
 */
 
+
+Route::post('/forget-password', [UserController::class, 'forget_Password']);
+
 Route::group(['middleware' => 'api'], function ($routes) {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
