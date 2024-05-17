@@ -115,7 +115,7 @@ class UserController extends Controller
         }
     }
 
-    public function sedVerifyMail($email)
+    public function sendVerifyMail($email)
     {
         if (auth()->user()) {
             $user = User::where('email', $email)->get();
