@@ -23,7 +23,7 @@ Route::group(['middleware' => 'api'], function ($routes) {
     Route::post('/login', [UserController::class, 'login']);
     Route::get('/logout', [UserController::class, 'logout']);
     Route::get('/userProfile', [UserController::class, 'userProfile']);
-    Route::get('/send-verify-mail/{email}', [UserController::class, 'sedVerifyMail']);
+    Route::get('/send-verify-mail/{email}', [UserController::class, 'sendVerifyMail']);
     Route::post('/profile-update', [UserController::class, 'updateProfile']);
     Route::get('/refresh-token', [UserController::class, 'refreshToken']);
 
