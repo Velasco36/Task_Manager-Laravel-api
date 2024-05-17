@@ -22,4 +22,8 @@ Route::get('/register', function () {
     return view('register');
 });
 
-Route::get('/verify-mail/{token}',[UserController::class, 'verificationMail']);
+
+
+Route::get('/verify-mail/{token}', [UserController::class, 'verificationMail']);
+Route::get('/reset-Password', [UserController::class, 'reset_Passwordload']);
+Route::post('/reset', [UserController::class, 'resetPassword'])->name('reset');
