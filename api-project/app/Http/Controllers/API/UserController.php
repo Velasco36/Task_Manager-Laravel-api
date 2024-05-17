@@ -14,13 +14,13 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Carbon;
 use Tymon\JWTAuth\Exceptions\JWTException;
-
+use App\Models\PasswordReset;
 class UserController extends Controller
 {
     //
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'forget_Password', 'reset_Passwordload', 'resetPassword']]);
     }
     public function register(Request $request)
     {
@@ -176,5 +176,71 @@ class UserController extends Controller
         } else {
             return response()->json(['success' => false, 'msg' => 'User is not Authenticated']);
         }
+    }
+
+    public function forget_Password(Request $request)
+    {
+        try {
+            $user = User::where('email', $request->email)->get();
+            if (count($user) > 0) {
+                $token = Str::random(40);
+                $domain = URL::to('/');
+                $url = $domain . '/reset-Password?token=' . $token;
+
+                $data['url'] = $url;
+                $data['email'] = $request->email;
+                $data['title'] = "Password Reset";
+                $data['body'] = "Please click on below link to reset rour password.";
+
+
+                Mail::send('forgetPasswordMail', ['data' => $data], function ($message) use ($data) {
+                    $message->to($data['email'])->subject($data['title']);
+                });
+
+
+                $datatime = Carbon::now()->format('Y-m-d H:i:s');
+
+                PasswordReset::updateOrCreate(
+                    ['email' => $request->email],
+                    [
+                        'email' => $request->email,
+                        'token' => $token,
+                        'created_at' => $datatime
+                    ]
+                );
+                return response()->json(['success' => true, 'msg' => 'Please check your mail to reset your Password']);
+            } else {
+                return response()->json(['success' => false, 'msg' => 'User is not fount.']);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
+        }
+    }
+    public function reset_Passwordload(Request $request)
+    {
+        $resetData = PasswordReset::where('token', $request->token)->first();
+        if ($resetData) {
+            $user = User::where('email', $resetData->email)->first();
+            if ($user) {
+                return view('resetPassword', compact('user'));
+            }
+        }
+        return view('resetPassword');
+    }
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed'
+        ]);
+
+        $user = User::find($request->id);
+        if ($user) {
+            $user->password = Hash::make($request->password);
+            $user->save();
+            return 'password change';
+        } else {
+            return view('404');
+        }
+
     }
 }
