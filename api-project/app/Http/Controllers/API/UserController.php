@@ -9,7 +9,11 @@ use App\Models\User;
 use Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-
+use Mail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Carbon;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserController extends Controller
 {
@@ -43,6 +47,7 @@ class UserController extends Controller
     }
 
 
+
     public function login(Request $request)
     {
         // Validar las credenciales del usuario
@@ -57,6 +62,10 @@ class UserController extends Controller
         $token = JWTAuth::attempt($credentials);
 
         // Devolver el token JWT en la respuesta
+        return $this->responWithToken($token);
+    }
+
+    private function responWithToken($token){
         return response()->json([
             'success' => true,
             'access_token' => $token,
@@ -82,4 +91,90 @@ class UserController extends Controller
         }
     }
 
+    public function updateProfile(Request $request)
+    {
+        if (auth()->user()) {
+
+            $validator = Validator::make($request->all(), [
+                'id' => 'required',
+                'name' => 'required|string',
+                'email' => 'required|email|string'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors());
+            }
+
+            $user = User::find($request->id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->save();
+            return response()->json(['success' => true, 'msg' => 'User Date', 'date' => $user]);
+        } else {
+            return response()->json(['success' => false, 'msg' => 'User is not Authenticated.']);
+        }
+    }
+
+    public function sedVerifyMail($email)
+    {
+        if (auth()->user()) {
+            $user = User::where('email', $email)->get();
+            if (count($user) > 0) {
+
+                $random = Str::random(40);
+                $domain = URL::to('/');
+                $url = $domain . '/' . $random;
+
+                $data['url'] = $url;
+                $data['email'] = $email;
+                $data['title'] = "Email Verification";
+                $data['body'] = "Pleasee click here to below to verify your mail.";
+
+                Mail::send('verifyMail', ['data' => $data], function ($message) use ($data) {
+                    $message->to($data['email'])->subject($data['title']);
+                });
+                $user = User::find($user[0]['id']);
+                $user->remember_token = $random;
+                $user->save();
+
+                return response()->json(['success' => true, 'msg' => 'Mail sent Successfully.']);
+            } else {
+                return response()->json(['success' => false, 'msg' => 'User is not fount.']);
+            }
+        } else {
+            return response()->json(['success' => false, 'msg' => 'User is not Authenticated']);
+        }
+    }
+
+    public function verificationMail($token)
+    {
+        $user = User::where('remember_token', $token)->get();
+        if (count($user) > 0) {
+            $datatime = Carbon::now()->format('Y-m-d :i:s');
+            $user = User::find($user[0]['id']);
+            $user->remember_token = "";
+            $user->email_verify_at = $datatime;
+            $user->save();
+        } else {
+            return view('404');
+        }
+    }
+
+    public function refreshToken()
+    {
+        if (auth()->user()) {
+            $newToken = $this->responWithToken(auth()->refresh());
+
+            try {
+                return response()->json(['error' => $newToken]);
+
+            } catch (JWTException $e) {
+                return response()->json(['error' => $e], 500);
+            }
+
+
+        } else {
+            return response()->json(['success' => false, 'msg' => 'User is not Authenticated']);
+        }
+    }
 }
