@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { register } from "../../redux/actions/actions";
@@ -16,7 +17,7 @@ const Register = () => {
   });
 
   const [showConfirmPassword, setShowConfimPassword] = useState(false);
-
+ console.log(setShowConfimPassword)
   const handleChange = (event) => {
     setInput({
       ...input,
@@ -69,18 +70,18 @@ const Register = () => {
         />
       </div>
       <div className="flex w-full flex-col md:w-1/2">
-        <div className="my-auto mx-auto flex flex-col justify-center px-6 pt-8 md:justify-start lg:w-[28rem]">
+        <div className="my-auto rounded-lg h-3/5 shadow-2xl mx-auto  flex flex-col justify-center px-6 pt-8 md:justify-start lg:w-[28rem]">
           <p className="text-center text-3xl font-bold md:text-left md:leading-tight">
             Create your free account
           </p>
           <p className="mt-6 text-center font-medium md:text-left">
             Already using wobble?
-            <a
-              href="#"
+            <Link
+              to="/login"
               className="whitespace-nowrap font-semibold text-blue-700"
             >
               Login here
-            </a>
+            </Link>
           </p>
 
           <form
