@@ -1,10 +1,12 @@
-import { GET_USER, REGISTER, SIGNIN } from "../actions/actionsTypes"
+import { GET_USER, REGISTER, SIGNIN, RESET_PASSWORD, UPDATE_PROFILE } from "../actions/actionsTypes"
 
 
 
 const initialState = {
     newUser: {},
-    user: {}
+    user: {},
+    fpassword: {},
+    updateProfile: {}
 }
 
 export const reducer = (state = initialState, { type, payload }) => {
@@ -28,6 +30,19 @@ export const reducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 user: payload
+            }
+        }
+        case RESET_PASSWORD: {
+            return {
+                ...state,
+                fpassword: payload
+            }
+        }
+
+        case UPDATE_PROFILE: {
+            return {
+                ...state,
+                updateProfile: payload
             }
         }
         default:
