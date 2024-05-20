@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsers, perfilUpdate } from "../../redux/actions/actions";
 import Swal from "sweetalert2";
@@ -17,6 +17,7 @@ export default function Profile() {
   const [profile, setProfile] = useState({
     id: "",
     name: "",
+    apellido: "",
     email: "",
   });
 
@@ -121,6 +122,19 @@ export default function Profile() {
                 </div>
                 <div className="pb-2 pt-4">
                   <TextField
+                    label="apellido"
+                    value={profile.apellido}
+                    variant="outlined"
+                    fullWidth
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    name="apellido"
+                    id="apellido"
+                  />
+                </div>
+                <div className="pb-2 pt-4">
+                  <TextField
                     label="Email"
                     value={profile.email}
                     variant="outlined"
@@ -149,13 +163,20 @@ export default function Profile() {
                 </div>
               </form>
             ) : (
-              <div className="p-4 border-t mx-8 mt-2">
+              <div className="p-4 border-t mx-8 mt-2 flex justify-between space-x-3">
                 <button
                   onClick={() => setIsEditing(true)}
                   className="w-1/2 block mx-auto rounded-full bg-gray-900 hover:shadow-lg font-semibold text-white px-6 py-2"
                 >
                   Editar Perfil
                 </button>
+
+                <Link
+                  to="/"
+                  className="w-1/2 text-center block mx-auto rounded-full bg-gray-900 hover:shadow-lg font-semibold text-white px-6 py-2"
+                >
+                  Regresar
+                </Link>
               </div>
             )}
           </div>

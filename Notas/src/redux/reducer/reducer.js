@@ -1,4 +1,14 @@
-import { GET_USER, REGISTER, SIGNIN, RESET_PASSWORD, UPDATE_PROFILE } from "../actions/actionsTypes"
+
+import {
+    GET_USER,
+    REGISTER,
+    SIGNIN,
+    RESET_PASSWORD,
+    UPDATE_PROFILE,
+    NOTE_LIST,
+    NOTE_UPDATE,
+    NOTE_SHOW
+} from "../actions/actionsTypes"
 
 
 
@@ -6,7 +16,10 @@ const initialState = {
     newUser: {},
     user: {},
     fpassword: {},
-    updateProfile: {}
+    updateProfile: {},
+    list: {},
+    updateNote: {},
+    showNote: {}
 }
 
 export const reducer = (state = initialState, { type, payload }) => {
@@ -43,6 +56,24 @@ export const reducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 updateProfile: payload
+            }
+        }
+        case NOTE_LIST: {
+            return {
+                ...state,
+                list: payload
+            }
+        }
+        case NOTE_UPDATE: {
+            return {
+                ...state,
+                updateNote: payload
+            }
+        }
+        case NOTE_SHOW: {
+            return {
+                ...state,
+                showNote: payload
             }
         }
         default:
