@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\NotesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,7 @@ use App\Http\Controllers\API\UserController;
 Route::post('/forget-password', [UserController::class, 'forget_Password']);
 
 Route::group(['middleware' => 'api'], function ($routes) {
+    // Router User
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
     Route::get('/logout', [UserController::class, 'logout']);
@@ -26,10 +28,14 @@ Route::group(['middleware' => 'api'], function ($routes) {
     Route::get('/send-verify-mail/{email}', [UserController::class, 'sendVerifyMail']);
     Route::post('/profile-update', [UserController::class, 'updateProfile']);
     Route::get('/refresh-token', [UserController::class, 'refreshToken']);
+    //Router Note
+    Route::get('/notes_all', [UserController::class, 'noteList']);
+    Route::post('/notes_creacte', [UserController::class, 'noteCreate']);
+    Route::put('/note-update/{id}', [UserController::class, 'noteUpdate']);
+    Route::delete('/note-delete/{id}', [UserController::class, 'noteDestroy']);
+    Route::get('/note-detail/{id}', [UserController::class, 'noteDetail']);
 
 
 });
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+

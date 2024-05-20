@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Note;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -52,4 +53,9 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    //relacion con el modelo notas
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
 }
