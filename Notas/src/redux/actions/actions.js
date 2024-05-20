@@ -1,4 +1,13 @@
-import { GET_USER, REGISTER, SIGNIN, RESET_PASSWORD, UPDATE_PROFILE } from "./actionsTypes";
+import {
+    GET_USER,
+    REGISTER, SIGNIN,
+    RESET_PASSWORD,
+    UPDATE_PROFILE,
+    NOTE_LIST,
+    NOTE_UPDATE,
+    NOTE_CREATE,
+    NOTE_SHOW
+} from "./actionsTypes";
 import axios from 'axios';
 
 const BASE_URL = 'http://127.0.0.1:8000/api/';
@@ -67,7 +76,7 @@ export const fPassword = (email) => async (dispatch) => {
 
 export const perfilUpdate = (update, token) => async (dispatch) => {
     try {
-       
+
         const { data } = await axios.post(`${BASE_URL}profile-update`, update, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -79,3 +88,81 @@ export const perfilUpdate = (update, token) => async (dispatch) => {
         throw error;
     }
 };
+
+export const listNote = (token) => async (dispatch) => {
+    try {
+
+        const { data } = await axios.get(`${BASE_URL}notes_all`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        dispatch({ type: NOTE_LIST, payload: data });
+    } catch (error) {
+        console.log('Error: ', error);
+        throw error;
+    }
+};
+
+export const updateNote = (token,id, update) => async (dispatch) => {
+    try {
+
+        const { data } = await axios.put(`${BASE_URL}note-update/ ${id}`,update, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        dispatch({ type: NOTE_UPDATE, payload: data });
+    } catch (error) {
+        console.log('Error: ', error);
+        throw error;
+    }
+};
+
+export const DeleteNote = (token, id) => async (dispatch) => {
+    try {
+
+        const { data } = await axios.delete(`${BASE_URL}note-delete/ ${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        dispatch({ type: NOTE_UPDATE, payload: data });
+    } catch (error) {
+        console.log('Error: ', error);
+        throw error;
+    }
+};
+
+
+export const CreateNote = (token, info) => async (dispatch) => {
+    try {
+
+        const { data } = await axios.post(`${BASE_URL}notes_creacte/ `, info, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        dispatch({ type: NOTE_CREATE, payload: data });
+    } catch (error) {
+        console.log('Error  : ', error);
+        throw error;
+    }
+};
+
+export const ShowNote = (token, id) => async (dispatch) => {
+    try {
+
+        const { data } = await axios.get(`${BASE_URL}note-detail/ ${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        dispatch({ type: NOTE_SHOW, payload: data });
+    } catch (error) {
+        console.log('Error: ', error);
+        throw error;
+    }
+};
+
+
