@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Http\Request;
 use App\Models\User;
-
 use Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -18,18 +17,28 @@ use Illuminate\Support\Carbon;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Models\PasswordReset;
 
+/**
+ * @OA\Info(
+ *     title="API User",
+ *     version="1.0",
+ *     description="Routes for User operations"
+ * )
+ *
+ * @OA\Server(url="http://127.0.0.1:8000")
+ */
 class UserController extends Controller
 {
-    //
+
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'forget_Password', 'reset_Passwordload', 'resetPassword', 'detailNote']]);
+        $this->middleware('auth:api', ['except' => ['login', 'logout', 'register', 'forget_Password', 'reset_Passwordload', 'resetPassword', 'detailNote']]);
     }
 
     public function notes()
     {
         return $this->hasMany(Note::class);
     }
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -79,7 +88,15 @@ class UserController extends Controller
             return response()->json(['error' => 'Credenciales inválidas'], 401);
         }
 
-        // Generar token JWT
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $token = JWTAuth::attempt($credentials);
+            return response()->json([
+                'msg' => 'Login successful',
+                'token' => $token
+            ]);
+        }
+
         $token = JWTAuth::attempt($credentials);
 
         // Devolver el token JWT en la respuesta
@@ -116,7 +133,6 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         if (auth()->user()) {
-
             $validator = Validator::make($request->all(), [
                 'id' => 'required',
                 'name' => 'required|string',
@@ -141,65 +157,7 @@ class UserController extends Controller
         }
     }
 
-    public function sendVerifyMail($email)
-    {
-        if (auth()->user()) {
-            $user = User::where('email', $email)->get();
-            if (count($user) > 0) {
-
-                $random = Str::random(40);
-                $domain = URL::to('/');
-                $url = $domain . '/' . $random;
-
-                $data['url'] = $url;
-                $data['email'] = $email;
-                $data['title'] = "Email Verification";
-                $data['body'] = "Pleasee click here to below to verify your mail.";
-
-                Mail::send('verifyMail', ['data' => $data], function ($message) use ($data) {
-                    $message->to($data['email'])->subject($data['title']);
-                });
-                $user = User::find($user[0]['id']);
-                $user->remember_token = $random;
-                $user->save();
-
-                return response()->json(['success' => true, 'msg' => 'Mail sent Successfully.']);
-            } else {
-                return response()->json(['success' => false, 'msg' => 'User is not fount.']);
-            }
-        } else {
-            return response()->json(['success' => false, 'msg' => 'User is not Authenticated']);
-        }
-    }
-
-    public function verificationMail($token)
-    {
-        $user = User::where('remember_token', $token)->get();
-        if (count($user) > 0) {
-            $datatime = Carbon::now()->format('Y-m-d :i:s');
-            $user = User::find($user[0]['id']);
-            $user->remember_token = "";
-            $user->email_verify_at = $datatime;
-            $user->save();
-        } else {
-            return view('404');
-        }
-    }
-
-    public function refreshToken()
-    {
-        if (auth()->user()) {
-            $newToken = $this->responWithToken(auth()->refresh());
-
-            try {
-                return response()->json(['error' => $newToken]);
-            } catch (JWTException $e) {
-                return response()->json(['error' => $e], 500);
-            }
-        } else {
-            return response()->json(['success' => false, 'msg' => 'User is not Authenticated']);
-        }
-    }
+  
 
     public function forget_Password(Request $request)
     {
