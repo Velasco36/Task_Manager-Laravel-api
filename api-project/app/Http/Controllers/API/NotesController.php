@@ -11,56 +11,56 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class NotesController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function noteCreate(Request $request)
     {
-        $user = auth()->user(); // Get authenticated user from JWT
+        $user = auth()->user(); // Obtener el usuario autenticado desde JWT
 
-       // $notes = $user->notes()->latest()->get(); // Get user's notes
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
 
-        return response()->json(['success' => true, 'user' => $user]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $note = Note::find(2);
-        $noteCreator = $note->user;
-        return response()->json([
-            'success' => true,
-            'data' => $noteCreator,
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|min:2|max:100',
+            'body' => 'required|string|max:250',
         ]);
 
-        // $validator = Validator::make($request->all(), [
-        //     'title' => 'required|string|min:2|max:100',
-        //     'body' => 'required|string|max:250',
-        // ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
-        // if ($validator->fails()) {
-        //     return response()->json($validator->errors(), 422);
-        // }
+        $note = Note::create([
+            'title' => $request->title,
+            'body' => $request->body,
+            'user_id' => $user->id, // Asignar el id del usuario autenticado
+        ]);
 
-        // $user = auth()->user(); // Get authenticated user from JWT
+        return response()->json([
+            'success' => true,
+            'message' => 'Note created successfully',
+           
+        ]);
+    }
 
-        // $note = $user->notes()->create([
-        //     'title' => $request->title,
-        //     'body' => $request->body,
-        // ]);
 
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Note created successfully',
-        //     'data' => $note,
-        // ]);
+    public function noteList()
+    {
+        $user = auth()->user(); // Obtener el usuario autenticado desde JWT
+
+        if (!$user) {
+            return response()->json(['success' => $user, 'message' => 'User not authenticated'], 401);
+        }
+        $notes = $user->notes;
+        return response()->json(['success' => true, 'notes' => $notes]);
     }
 
     /**
@@ -69,17 +69,6 @@ class NotesController extends Controller
      * @param Note $note
      * @return \Illuminate\Http\Response
      */
-    public function show(Note $note)
-    {
-        $user = auth()->user(); // Get authenticated user from JWT
-
-        if ($user->id !== $note->user_id) {
-            return response()->json(['message' => 'Unauthorized access'], 403);
-        }
-
-        return response()->json($note);
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -87,25 +76,39 @@ class NotesController extends Controller
      * @param Note $note
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Note $note)
+    public function noteUpdate(Request $request, $id)
     {
+        $user = auth()->user(); // Obtener el usuario autenticado desde JWT
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        $note = Note::find($id);
+
+        if (!$note) {
+            return response()->json(['success' => false, 'message' => 'Note not found'], 404);
+        }
+
+        // Verificar si la nota pertenece al usuario autenticado
+        if ($user->id !== $note->user_id) {
+            return response()->json(['message' => 'Unauthorized access'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
-            // Remove id validation
-            'title' => 'required|string|max:255', // Limit title length (optional)
-            'body' => 'nullable|string', // Allow empty body (optional)
+            'title' => 'required|string|max:255', // Validar título
+            'body' => 'nullable|string', // Validar cuerpo
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $user = auth()->user(); // Get authenticated user from JWT
-
-        if ($user->id !== $note->user_id) {
-            return response()->json(['message' => 'Unauthorized access'], 403);
-        }
-
-        $note->update($request->all());
+        // Actualizar la nota usando el método `update` del modelo de Eloquent
+        $note->update([
+            'title' => $request->title,
+            'body' => $request->body,
+        ]);
 
         return response()->json([
             'success' => true,
@@ -114,34 +117,103 @@ class NotesController extends Controller
         ]);
     }
 
+
     /**
      * Remove the specified resource from storage.
      *
      * @param Note $note
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Note $note)
+    public function noteDestroy($id)
     {
         $user = auth()->user(); // Get authenticated user from JWT
-
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+        $note = Note::find($id);
+        if (!$note) {
+            return response()->json(['success' => false, 'message' => 'Note not found'], 404);
+        }
+        // Verificar si la nota pertenece al usuario autenticado
         if ($user->id !== $note->user_id) {
             return response()->json(['message' => 'Unauthorized access'], 403);
         }
-
         $note->delete();
 
         return response()->json(['success' => true, 'message' => 'Note deleted successfully']);
     }
 
-    public function detail($id)
+    public function noteDetail($id)
     {
-        try {
-            $user = auth()->user(); // Get authenticated user from JWT
-            $note = $user->notes()->findOrFail($id); // Find note for the user
+        $user = auth()->user();
+        if ($user) {
+            try {
+                $user = auth()->user(); // Get authenticated user from JWT
+                $note = $user->notes()->findOrFail($id); // Find note for the user
 
-            return response()->json($note);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Note not found'], 404);
+                return response()->json($note);
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Note not found'], 404);
+            }
+        } else {
+            return response()->json(['message' => $user]);
         }
     }
+    public function orderby($filter)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        $sortBy = 'updated_at'; // Default to 'created_at'
+        $sortDirection = 'desc'; // Default to ascending
+
+        // Determine sorting criteria based on filter
+        switch ($filter) {
+            case 'date':
+                $sortBy = 'updated_at';
+                break;
+            case 'title':
+                $sortBy = 'title';
+                $sortDirection = 'asc'; // Ensure alphabetical order for titles
+                break;
+            default:
+                // Handle invalid filter (optional: return error message)
+                return response()->json(['success' => false, 'message' => 'Invalid sort filter'], 400);
+        }
+
+        $notes = $user->notes()
+            ->orderBy($sortBy, $sortDirection)
+            ->get();
+
+        return response()->json(['success' => true, 'notes' => $notes]);
+    }
+
+    public function searchNotes(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        // Get search term from request
+        $searchTerm = $request->get('search');
+
+        // Validate search term (optional)
+        if (!$searchTerm) {
+            return response()->json(['success' => false, 'message' => 'Search term required'], 400);
+        }
+
+        // Search for notes
+        $notes = $user->notes()
+            ->where(function ($query) use ($searchTerm) {
+                $query->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('body', 'like', "%{$searchTerm}%");
+            })
+            ->get();
+
+        return response()->json(['success' => true, 'results' => $notes]);
+    }
 }
+
