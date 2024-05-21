@@ -34,6 +34,8 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:2|max:100',
+            'last_name' => 'required|string|min:2|max:100',
+            'username' => 'required|string|min:2|max:100||unique:users',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6|confirmed'
         ]);
@@ -44,6 +46,8 @@ class UserController extends Controller
 
         $user = User::create([
             'name' => $request->name,
+            'last_name' => $request->last_name,
+            'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
@@ -61,6 +65,15 @@ class UserController extends Controller
         // Validar las credenciales del usuario
         $credentials = $request->only('email', 'password');
 
+        // Buscar al usuario por email
+        $user = User::where('email', $credentials['email'])->first();
+
+        // Si el usuario no existe, retornar un error
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+
         // Intentar autenticar al usuario
         if (!auth()->attempt($credentials)) {
             return response()->json(['error' => 'Credenciales inválidas'], 401);
@@ -70,10 +83,10 @@ class UserController extends Controller
         $token = JWTAuth::attempt($credentials);
 
         // Devolver el token JWT en la respuesta
-        return $this->responWithToken($token);
+        return $this->respondWithToken($token);
     }
 
-    private function responWithToken($token)
+    private function respondWithToken($token)
     {
         return response()->json([
             'success' => true,
@@ -107,6 +120,8 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'id' => 'required',
                 'name' => 'required|string',
+                'last_name' => 'required|string',
+                'username' => 'required|string',
                 'email' => 'required|email|string'
             ]);
 
@@ -116,6 +131,8 @@ class UserController extends Controller
 
             $user = User::find($request->id);
             $user->name = $request->name;
+            $user->last_name = $request->last_name;
+            $user->username = $request->username;
             $user->email = $request->email;
             $user->save();
             return response()->json(['success' => true, 'msg' => 'User Date', 'date' => $user]);
@@ -246,154 +263,6 @@ class UserController extends Controller
             return 'password change';
         } else {
             return view('404');
-        }
-    }
-
-
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function noteCreate(Request $request)
-    {
-        $user = auth()->user(); // Obtener el usuario autenticado desde JWT
-
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|min:2|max:100',
-            'body' => 'required|string|max:250',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $note = Note::create([
-            'title' => $request->title,
-            'body' => $request->body,
-            'user_id' => $user->id, // Asignar el id del usuario autenticado
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Note created successfully',
-            // 'data' => $note,
-            // 'user'=> $user
-        ]);
-    }
-
-
-    public function noteList()
-    {
-        $user = auth()->user(); // Obtener el usuario autenticado desde JWT
-
-        if (!$user) {
-            return response()->json(['success' => $user, 'message' => 'User not authenticated'], 401);
-        }
-        $notes = $user->notes;
-        return response()->json(['success' => true, 'notes' => $notes]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Note $note
-     * @return \Illuminate\Http\Response
-     */
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param Note $note
-     * @return \Illuminate\Http\Response
-     */
-    public function noteUpdate(Request $request, $id)
-    {
-        $user = auth()->user(); // Obtener el usuario autenticado desde JWT
-
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
-        }
-
-        $note = Note::find($id);
-
-        if (!$note) {
-            return response()->json(['success' => false, 'message' => 'Note not found'], 404);
-        }
-
-        // Verificar si la nota pertenece al usuario autenticado
-        if ($user->id !== $note->user_id) {
-            return response()->json(['message' => 'Unauthorized access'], 403);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255', // Validar título
-            'body' => 'nullable|string', // Validar cuerpo
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        // Actualizar la nota usando el método `update` del modelo de Eloquent
-        $note->update([
-            'title' => $request->title,
-            'body' => $request->body,
-        ]);
-
-        return response()->json([
-                'success' => true,
-                'message' => 'Note updated successfully',
-                'data' => $note,
-            ]);
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Note $note
-     * @return \Illuminate\Http\Response
-     */
-    public function noteDestroy($id)
-    {
-        $user = auth()->user(); // Get authenticated user from JWT
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
-        }
-        $note = Note::find($id);
-        if (!$note) {
-            return response()->json(['success' => false, 'message' => 'Note not found'], 404);
-        }
-        // Verificar si la nota pertenece al usuario autenticado
-        if ($user->id !== $note->user_id) {
-            return response()->json(['message' => 'Unauthorized access'], 403);
-        }
-        $note->delete();
-
-        return response()->json(['success' => true, 'message' => 'Note deleted successfully']);
-    }
-
-    public function noteDetail($id)
-    {
-        $user = auth()->user();
-        if ($user) {
-            try {
-                $user = auth()->user(); // Get authenticated user from JWT
-                $note = $user->notes()->findOrFail($id); // Find note for the user
-
-                return response()->json($note);
-            } catch (\Exception $e) {
-                return response()->json(['message' => 'Note not found'], 404);
-            }
-        } else {
-            return response()->json(['message' => $user]);
         }
     }
 
