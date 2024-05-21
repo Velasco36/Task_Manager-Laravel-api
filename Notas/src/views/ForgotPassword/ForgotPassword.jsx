@@ -16,7 +16,7 @@ function ForgotPassword() {
         await dispatch(fPassword({email: email}));
         Swal.fire({
           width: "20em",
-          title: "Sesion iniciada.",
+          title: "Email Envio",
           showConfirmButton: false,
           icon: "success",
           timer: 3000,
