@@ -58,7 +58,7 @@ export default function NoteCreate({ formattedToken }) {
         timerProgressBar: true,
       });
       setTimeout(() => {
-        window.location.href = "/list";
+        window.location.href = "/";
       }, 2000);
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Error desconocido";
