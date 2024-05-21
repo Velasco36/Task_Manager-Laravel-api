@@ -66,7 +66,7 @@ export default function NoteShow() {
         timer: 3000,
         timerProgressBar: true,
       });
-       navigate("/list");
+       navigate("/");
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Error desconocido";
       Swal.fire({
@@ -150,7 +150,7 @@ export default function NoteShow() {
                       Aceptar
                     </Button>
                     <Button
-                    href="/list"
+                    href="/"
                       type="button"
                       color="warning"
                       variant="outlined"

@@ -90,7 +90,7 @@ export default function Navbar() {
                 id="user-dropdown"
               >
                 <div className="px-4 py-3">
-                  <span className="block text-sm text-gray-900 dark:text-white">
+                  <span className="block text-sm text-center text-gray-900 dark:text-white">
                     {message?.name}
                   </span>
                   <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">
@@ -103,7 +103,7 @@ export default function Navbar() {
                       to="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                     >
-                      Profile
+                      Perfil
                     </Link>
                   </li>
                   <li>
@@ -111,7 +111,7 @@ export default function Navbar() {
                       to="/"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                     >
-                      Settings
+                      Home
                     </Link>
                   </li>
 
@@ -121,7 +121,7 @@ export default function Navbar() {
                       href="#"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                     >
-                      Sign out
+                      Cerrar sesion
                     </a>
                   </li>
                 </ul>

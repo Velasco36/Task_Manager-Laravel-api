@@ -78,10 +78,10 @@ const Login = () => {
         </div>
         <div className="w-full py-6 z-20 bg-white rounded-lg shadow-lg">
           <h1 className="text-5xl font-bold py-2 tracking-wide text-indigo-600 text-center">
-            Iniciar session
+            Iniciar Sesión
           </h1>
           <p className="text-gray-700">
-            Welcome back, please login to your account.
+            Bienvenido, inicie sesión en su cuenta
           </p>
           <form
             className="sm:w-2/3 w-full px-4 lg:px-0 mx-auto"
@@ -124,19 +124,19 @@ const Login = () => {
               />
             </div>
             <div className="text-right text-gray-400 hover:underline hover:text-indigo-400">
-              <Link to="/forgot-password">Forgot your password?</Link>
+              <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
             </div>
             <div className="px-4 pb-2 pt-4">
               <button
                 type="submit"
                 className="uppercase block w-full p-4 text-lg rounded-full bg-indigo-500 hover:bg-indigo-600 focus:outline-none"
               >
-                Sign In
+                Iniciar sesión
               </button>
             </div>
           </form>
           <div className="text-center text-gray-400 hover:underline hover:text-indigo-600">
-            <Link to="/register">Do not have an account? </Link>
+            <Link to="/register">¿No tiene una cuenta? </Link>
           </div>
         </div>
       </div>

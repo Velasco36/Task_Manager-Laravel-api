@@ -7,7 +7,9 @@ import {
     UPDATE_PROFILE,
     NOTE_LIST,
     NOTE_UPDATE,
-    NOTE_SHOW
+    NOTE_SHOW,
+    NOTE_FILTER,
+    NOTE_SEARCH
 } from "../actions/actionsTypes"
 
 
@@ -19,7 +21,9 @@ const initialState = {
     updateProfile: {},
     list: {},
     updateNote: {},
-    showNote: {}
+    showNote: {},
+    filter: {},
+    search: {}
 }
 
 export const reducer = (state = initialState, { type, payload }) => {
@@ -76,6 +80,21 @@ export const reducer = (state = initialState, { type, payload }) => {
                 showNote: payload
             }
         }
+
+        case NOTE_FILTER: {
+            return {
+                ...state,
+                filter: payload
+            }
+        }
+        case NOTE_SEARCH: {
+            return {
+                ...state,
+                search: payload
+            }
+        }
+
+
         default:
             return {
                 ...state

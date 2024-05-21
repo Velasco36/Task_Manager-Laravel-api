@@ -6,13 +6,16 @@ import {
     NOTE_LIST,
     NOTE_UPDATE,
     NOTE_CREATE,
-    NOTE_SHOW
+    NOTE_SHOW,
+    NOTE_FILTER,
+    NOTE_SEARCH
 } from "./actionsTypes";
 import axios from 'axios';
 
 const BASE_URL = 'http://127.0.0.1:8000/api/';
 
 export const register = (newUser) => async (dispatch) => {
+    console.log(newUser)
     try {
         const { data } = await axios.post(`${BASE_URL}register/`, newUser);
         console.log(data);
@@ -166,3 +169,35 @@ export const ShowNote = (token, id) => async (dispatch) => {
 };
 
 
+
+export const OrderNote = (token, filter) => async (dispatch) => {
+    try {
+
+        const { data } = await axios.get(`${BASE_URL}note-filter/${filter}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        dispatch({ type: NOTE_FILTER, payload: data });
+    } catch (error) {
+        console.log('Error: ', error);
+        throw error;
+    }
+};
+
+
+export const SearchNote = (token, search) => async (dispatch) => {
+    try {
+        console.log(search)
+        const { data } = await axios.post(`${BASE_URL}search-notes`, search, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        console.log(data)
+        dispatch({ type: NOTE_SEARCH, payload: data });
+    } catch (error) {
+        console.log('Error: ', error);
+        throw error;
+    }
+};
