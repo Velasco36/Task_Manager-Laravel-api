@@ -25,18 +25,16 @@ Route::group(['middleware' => 'api'], function ($routes) {
     Route::post('/login', [UserController::class, 'login']);
     Route::get('/logout', [UserController::class, 'logout']);
     Route::get('/userProfile', [UserController::class, 'userProfile']);
-    Route::get('/send-verify-mail/{email}', [UserController::class, 'sendVerifyMail']);
     Route::post('/profile-update', [UserController::class, 'updateProfile']);
-    Route::get('/refresh-token', [UserController::class, 'refreshToken']);
+
     //Router Note
-    Route::get('/notes_all',[NotesController::class, 'noteList'] );
+
     Route::post('/notes_creacte', [NotesController::class, 'noteCreate']);
     Route::put('/note-update/{id}', [NotesController::class, 'noteUpdate']);
     Route::delete('/note-delete/{id}', [NotesController::class, 'noteDestroy']);
     Route::get('/note-detail/{id}', [NotesController::class, 'noteDetail']);
     Route::get('/note-filter/{filter}', [NotesController::class, 'orderby']);
     Route::post('search-notes/', [NotesController::class, 'searchNotes']);
-
 
 });
 

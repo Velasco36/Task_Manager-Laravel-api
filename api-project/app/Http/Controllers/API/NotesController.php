@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+
 class NotesController extends Controller
 {
 
@@ -47,21 +48,10 @@ class NotesController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Note created successfully',
-           
+
         ]);
     }
 
-
-    public function noteList()
-    {
-        $user = auth()->user(); // Obtener el usuario autenticado desde JWT
-
-        if (!$user) {
-            return response()->json(['success' => $user, 'message' => 'User not authenticated'], 401);
-        }
-        $notes = $user->notes;
-        return response()->json(['success' => true, 'notes' => $notes]);
-    }
 
     /**
      * Display the specified resource.
