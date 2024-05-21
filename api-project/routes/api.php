@@ -29,11 +29,13 @@ Route::group(['middleware' => 'api'], function ($routes) {
     Route::post('/profile-update', [UserController::class, 'updateProfile']);
     Route::get('/refresh-token', [UserController::class, 'refreshToken']);
     //Router Note
-    Route::get('/notes_all', [UserController::class, 'noteList']);
-    Route::post('/notes_creacte', [UserController::class, 'noteCreate']);
-    Route::put('/note-update/{id}', [UserController::class, 'noteUpdate']);
-    Route::delete('/note-delete/{id}', [UserController::class, 'noteDestroy']);
-    Route::get('/note-detail/{id}', [UserController::class, 'noteDetail']);
+    Route::get('/notes_all',[NotesController::class, 'noteList'] );
+    Route::post('/notes_creacte', [NotesController::class, 'noteCreate']);
+    Route::put('/note-update/{id}', [NotesController::class, 'noteUpdate']);
+    Route::delete('/note-delete/{id}', [NotesController::class, 'noteDestroy']);
+    Route::get('/note-detail/{id}', [NotesController::class, 'noteDetail']);
+    Route::get('/note-filter/{filter}', [NotesController::class, 'orderby']);
+    Route::post('search-notes/', [NotesController::class, 'searchNotes']);
 
 
 });
