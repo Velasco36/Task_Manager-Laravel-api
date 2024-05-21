@@ -174,7 +174,35 @@ class UserControllerTest extends TestCase
     }
 
 
+ public function test_reset_password()
+    {
+        // Crear una contraseña de prueba
+        $password = 'miguel';
+        $newPassword = 'newPassword123';
 
+        // Crear un usuario
+        $user = User::factory()->create([
+            'password' => Hash::make($password)
+        ]);
+
+        // Datos para la solicitud de restablecimiento de contraseña
+        $data = [
+            'id' => $user->id,
+            'password' => $newPassword,
+            'password_confirmation' => $newPassword
+        ];
+
+        // Realizar la solicitud POST para restablecer la contraseña
+        $response = $this->postJson('/reset', $data);
+
+        // Verificar que la respuesta sea la esperada
+        $response->assertStatus(200)
+            ->assertSee('password change');
+
+        // Verificar que la contraseña del usuario haya sido actualizada en la base de datos
+        $user->refresh();
+        $this->assertTrue(Hash::check($newPassword, $user->password));
+    }
 
     }
 
