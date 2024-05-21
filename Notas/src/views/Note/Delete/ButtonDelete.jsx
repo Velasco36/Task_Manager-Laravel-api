@@ -33,7 +33,7 @@ export default function ButtonDelete({ formattedToken, id }) {
           timerProgressBar: true,
         });
         setTimeout(() => {
-          window.location.href = "/list";
+          window.location.href = "/";
         }, 2000);
       }
     } catch (error) {
@@ -65,5 +65,5 @@ export default function ButtonDelete({ formattedToken, id }) {
 
 ButtonDelete.propTypes = {
   formattedToken: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
 };
