@@ -17,7 +17,8 @@ export default function Profile() {
   const [profile, setProfile] = useState({
     id: "",
     name: "",
-    apellido: "",
+    last_name: "",
+    username: "",
     email: "",
   });
 
@@ -34,6 +35,8 @@ export default function Profile() {
       setProfile({
         id: message?.id,
         name: message?.name,
+        last_name: message?.last_name,
+        username: message?.username,
         email: message?.email,
       });
     }
@@ -98,8 +101,11 @@ export default function Profile() {
               />
             </div>
             <div className="text-center mt-2">
-              <h2 className="font-semibold">{message?.name}</h2>
-              <p className="text-gray-500">{message?.email}</p>
+              <h2 className="font-semibold">
+                {message?.name} {message?.last_name}
+              </h2>
+              <p className="text-gray-500">Usuario: {message?.username}</p>
+              <p className="text-gray-500">correo: {message?.email}</p>
             </div>
 
             {isEditing ? (
@@ -123,14 +129,27 @@ export default function Profile() {
                 <div className="pb-2 pt-4">
                   <TextField
                     label="apellido"
-                    value={profile.apellido}
+                    value={profile.last_name}
                     variant="outlined"
                     fullWidth
                     onChange={handleChange}
                     type="text"
                     required
-                    name="apellido"
-                    id="apellido"
+                    name="last_name"
+                    id="last_name"
+                  />
+                </div>
+                <div className="pb-2 pt-4">
+                  <TextField
+                    label="Usuario"
+                    value={profile.username}
+                    variant="outlined"
+                    fullWidth
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    name="username"
+                    id="username"
                   />
                 </div>
                 <div className="pb-2 pt-4">
