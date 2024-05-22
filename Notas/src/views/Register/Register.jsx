@@ -159,7 +159,7 @@ const Register = () => {
                   id="login-password"
                   name="password"
                   className="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
-                  placeholder="Password (minimum 8 characters)"
+                  placeholder="Contraseña"
                   value={input.password}
                   onChange={handleChange}
                 />
@@ -179,7 +179,7 @@ const Register = () => {
                   id="login-password-confirm"
                   name="password_confirmation"
                   className="w-full flex-shrink appearance-none border-gray-300 bg-white py-2 px-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none"
-                  placeholder="Confirm Password"
+                  placeholder="Confirmar Contraseña"
                   value={input.password_confirmation}
                   onChange={handleChange}
                 />
@@ -198,7 +198,7 @@ const Register = () => {
               type="submit"
               className="mt-6 w-full rounded-lg bg-blue-600 px-4 py-2 text-center text-base font-semibold text-white shadow-md outline-none ring-blue-500 ring-offset-2 transition hover:bg-blue-700 focus:ring-2"
             >
-              Sign in
+              Aceptar
             </button>
           </form>
         </div>

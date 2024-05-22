@@ -9,6 +9,7 @@ export const NOTE_CREATE = 'NOTE_CREATE'
 export const NOTE_SHOW = 'NOTE_SHOW'
 export const NOTE_FILTER = 'NOTE_FILTER'
 export const NOTE_SEARCH = 'NOTE_SEARCH'
+export const GET_ERROR = 'GET_ERROR'
 
 
 

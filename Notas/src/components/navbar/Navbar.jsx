@@ -1,25 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Transition } from "@headlessui/react";
 import { getUsers, logout } from "../../redux/actions/actions";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Swal from "sweetalert2";
+import PropTypes from "prop-types";
 
-export default function Navbar() {
+export default function Navbar({ dataUser, formattedToken }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const token = localStorage.getItem("Token");
-  const formattedToken = token.replace(/["',]/g, ""); // Remueve las comillas dobles y las comas del token
 
-  const user = useSelector((state) => state.user);
-  const { message } = user;
+  const { message } = dataUser;
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
     if (formattedToken) {
-
       dispatch(getUsers(formattedToken));
     }
   }, [dispatch, formattedToken]);
@@ -28,11 +25,10 @@ export default function Navbar() {
     setIsUserMenuOpen(!isUserMenuOpen);
   };
 
+  const handleLogout = async (e) => {
+    e.preventDefault();
 
-  const handleLogout = async(e) => {
-     e.preventDefault();
-
-        try {
+    try {
       await dispatch(logout(formattedToken));
       Swal.fire({
         width: "20em",
@@ -42,10 +38,10 @@ export default function Navbar() {
         timer: 3000,
         timerProgressBar: true,
       });
-       localStorage.removeItem("Token");
+      localStorage.removeItem("Token");
       navigate("/login");
     } catch (error) {
-      const { response } = error
+      const { response } = error;
       Swal.fire({
         width: "20em",
         title: `${response.data.data}`,
@@ -55,7 +51,6 @@ export default function Navbar() {
         timer: 1000,
       });
     }
-
   };
 
   return (
@@ -127,11 +122,13 @@ export default function Navbar() {
                 </ul>
               </div>
             </Transition>
-
           </div>
-
         </div>
       </nav>
     </div>
   );
 }
+Navbar.propTypes = {
+  dataUser: PropTypes.object.isRequired,
+  formattedToken: PropTypes.string.isRequired,
+};
