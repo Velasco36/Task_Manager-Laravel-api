@@ -9,7 +9,8 @@ import {
     NOTE_UPDATE,
     NOTE_SHOW,
     NOTE_FILTER,
-    NOTE_SEARCH
+    NOTE_SEARCH,
+    GET_ERROR
 } from "../actions/actionsTypes"
 
 
@@ -23,7 +24,8 @@ const initialState = {
     updateNote: {},
     showNote: {},
     filter: {},
-    search: {}
+    search: {},
+    error: {}
 }
 
 export const reducer = (state = initialState, { type, payload }) => {
@@ -94,6 +96,13 @@ export const reducer = (state = initialState, { type, payload }) => {
             }
         }
 
+        case GET_ERROR
+: {
+            return {
+                ...state,
+                error: payload
+            }
+        }
 
         default:
             return {
