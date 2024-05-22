@@ -20,13 +20,13 @@
                 @csrf
                 <div class="flex flex-col items-center justify-center space-y-6">
                     <div class="relative w-full">
-                        <input type="password" id="password" name="password" placeholder="Contraseña" class="w-full appearance-none rounded-full border border-gray-300 bg-white p-2 px-4 focus:bg-blue-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                        <input type="password" id="password" required name="password" placeholder="Contraseña" class="w-full appearance-none rounded-full border border-gray-300 bg-white p-2 px-4 focus:bg-blue-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
                         <span id="togglePassword" class="absolute inset-y-0 right-4 flex items-center cursor-pointer text-gray-500 hover:text-indigo-500">
                             <i class="fas fa-eye"></i>
                         </span>
                     </div>
                     <div class="relative w-full">
-                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmar Contraseña" class="w-full appearance-none rounded-full border border-gray-300 bg-white p-2 px-4 focus:bg-blue-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                        <input type="password" id="confirm_password" required name="confirm_password" placeholder="Confirmar Contraseña" class="w-full appearance-none rounded-full border border-gray-300 bg-white p-2 px-4 focus:bg-blue-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
                         <span id="toggleConfirmPassword" class="absolute inset-y-0 right-4 flex items-center cursor-pointer text-gray-500 hover:text-indigo-500">
                             <i class="fas fa-eye"></i>
                         </span>
@@ -70,6 +70,7 @@
             });
 
             form.addEventListener('submit', function(e) {
+
                 if (password.value !== confirmPassword.value) {
                     e.preventDefault();
                     Swal.fire({

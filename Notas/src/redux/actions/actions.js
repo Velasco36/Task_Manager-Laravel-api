@@ -8,7 +8,8 @@ import {
     NOTE_CREATE,
     NOTE_SHOW,
     NOTE_FILTER,
-    NOTE_SEARCH
+    NOTE_SEARCH,
+    GET_ERROR
 } from "./actionsTypes";
 import axios from 'axios';
 
@@ -29,8 +30,8 @@ export const register = (newUser) => async (dispatch) => {
 export const signin = (user) => async (dispatch) => {
     try {
         const { data } = await axios.post(`${BASE_URL}login`, user);
-
-        localStorage.setItem("Token", JSON.stringify(data.access_token));
+        console.log(data)
+        localStorage.setItem("Token", JSON.stringify(data.token));
         dispatch({ type: SIGNIN, payload: data });
     } catch (error) {
         console.log(error);
@@ -47,7 +48,7 @@ export const getUsers = (token) => async (dispatch) => {
         });
         dispatch({ type: GET_USER, payload: data });
     } catch (error) {
-        console.log('Error: ', error);
+        dispatch({ type: GET_ERROR, payload: error.response.data });
         throw error;
     }
 };
